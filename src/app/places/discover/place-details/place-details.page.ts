@@ -1,19 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NavController, ModalController, ActionSheetController } from '@ionic/angular';
 import { PlacesService } from '../../places.service';
 import { ActivatedRoute } from '@angular/router';
 import { Places } from '../../places.model';
 import { CreateBookingComponent } from 'src/app/bookings/create-booking/create-booking.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-place-details',
   templateUrl: './place-details.page.html',
   styleUrls: ['./place-details.page.scss'],
 })
-export class PlaceDetailsPage implements OnInit {
+export class PlaceDetailsPage implements OnInit, OnDestroy {
 
   place: Places;
-  constructor(private _navCtrl: NavController,
+  placesSub: Subscription
+  constructor (private _navCtrl: NavController,
     private _activatedRoute: ActivatedRoute,
     private modalController: ModalController,
     private _placeServices: PlacesService,
@@ -25,15 +27,23 @@ export class PlaceDetailsPage implements OnInit {
       if (!placeId) {
         this._navCtrl.navigateBack('/places/tab/discover');
       } else {
-        this.place = this._placeServices.getPlaceById(placeId);
+        this.placesSub = this._placeServices.getPlaceById(placeId).subscribe(place => {
+          this.place = place;
+        });
       }
     })
+  }
+
+  ngOnDestroy(): void {
+    if (this.placesSub) {
+      this.placesSub.unsubscribe()
+    }
   }
 
   openBookingModal(mode: 'select' | 'random') {
     // this._navCtrl.navigateBack('/places/tab/discover');
     this.modalController.create({
-      componentProps: { selectedPlace: this.place },
+      componentProps: { selectedPlace: this.place, selectedMode: mode },
       component: CreateBookingComponent
     })
       .then(modal => {

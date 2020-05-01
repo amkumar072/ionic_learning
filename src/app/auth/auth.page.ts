@@ -29,7 +29,7 @@ export class AuthPage implements OnInit {
         setTimeout(() => {
           this.isLoading = false;
           loadingEl.dismiss();
-          this._router.navigateByUrl('/places/tabs/discover');
+          this._router.navigateByUrl('/places/tab/discover');
         }, 1500);
       });
   }
