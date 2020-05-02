@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Places } from './places.model';
 import { BehaviorSubject } from 'rxjs';
-import { take, map, tap, delay } from 'rxjs/operators';
+import { take, map, tap, delay, switchMap } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +29,7 @@ export class PlacesService {
       'abc'),
   ]);
 
-  constructor () { }
+  constructor (private _http: HttpClient) { }
 
   get places() {
     return this._places.asObservable();
@@ -44,12 +45,45 @@ export class PlacesService {
   }
 
   addPlace(newplaces: Places) {
-    return this.places.pipe(
-      take(1),
-      delay(1000),
-      tap(place => {
-        this._places.next(place.concat(newplaces));
-      }))
+    let generatedId: string;
+    return this._http
+      .post<{ name: string }>(
+        'https://ionic-angular-61cb7.firebaseio.com/offered-places.json',
+        {
+          ...newplaces,
+          id: null
+        }
+      )
+      .pipe(
+        switchMap(resData => {
+          generatedId = resData.name;
+          return this.places;
+        }),
+        take(1),
+        tap(places => {
+          newplaces.id = generatedId;
+          this._places.next(places.concat(newplaces));
+        })
+      );
+
+    // this._http.post(
+    //   'https://ionic-angular-61cb7.firebaseio.com/offered-places.json',
+    //   {
+    //     ...newplaces,
+    //     id: null
+    //   }
+    // ).pipe(
+    //   tap(responseData => {
+    //     console.log(responseData);
+    //   })
+    // )
+
+    // return this.places.pipe(
+    //   take(1),
+    //   delay(1000),
+    //   tap(place => {
+    //     this._places.next(place.concat(newplaces));
+    //   }))
   }
 
   updatePlace(newplaces: Places) {
@@ -59,7 +93,7 @@ export class PlacesService {
       tap(place => {
         const updateIndex = place.findIndex(x => x.id === newplaces.id)
         const updatedPlaces = [...place]
-        updatedPlaces[updateIndex]= newplaces;
+        updatedPlaces[updateIndex] = newplaces;
         this._places.next(updatedPlaces);
       }))
   }

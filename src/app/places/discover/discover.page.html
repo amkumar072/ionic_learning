@@ -8,7 +8,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-segment (ionChange)="onFilterUpdate($event)" value="all">
+  <ion-segment (ionChange)="onFilterUpdate($event.detail.value)" value="all">
     <ion-segment-button value="all">All Places</ion-segment-button>
     <ion-segment-button value="bookable">Bookable Places</ion-segment-button>
   </ion-segment>
@@ -31,7 +31,7 @@
           <ion-card-content>
             {{loadedPlaces[0].description}}
           </ion-card-content>
-          <div class="ion-text-right">
+          <div class="ion-text-center">
             <ion-button fill="clear" [routerLink]="['/places/tab/discover/',loadedPlaces[0].id]">
               More</ion-button>
           </div>
@@ -42,7 +42,7 @@
       <ion-col size="12" size-md="6" size-sm="8" offset-sm="2" class="ion-text-center">
         <ion-list>
           <ion-item 
-            [routerLink]="['/places/tab/discover/', loadedPlaces[0].id]" detail>
+            [routerLink]="['/places/tab/discover/', place.id]" detail>
             <ion-thumbnail slot="start">
               <ion-img [src]="place.imageURL"></ion-img>
             </ion-thumbnail>

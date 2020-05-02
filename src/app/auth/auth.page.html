@@ -31,11 +31,11 @@
         <ion-col size-sm="6" offset-sm="3">
           <ion-button type="button" color="primary" class="ion-margin" fill="clear" 
           expand="block" (click)="onSwitchAuth()">
-          Switch to {{ !isLogin ? 'Signup':'Login'}}
+          Switch to {{ isLogin ? 'Signup':'Login'}}
           </ion-button>
 
           <ion-button type="submit" color="primary" class="ion-margin" [disabled]="!login.valid"
-            expand="block" (click)="onLogin()">Login</ion-button>
+            expand="block">{{ !isLogin ? 'Signup':'Login'}}</ion-button>
             <!-- <ion-button type="submit" color="primary" class="ion-margin"
             expand="block" (click)="onLogin()">Login</ion-button> -->
         </ion-col>

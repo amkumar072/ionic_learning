@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { MenuController } from '@ionic/angular';
 import { SegmentChangeEventDetail } from '@ionic/core';
 import { AuthService } from 'src/app/auth/auth.service';
+import { take, map, tap, delay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-discover',
@@ -15,7 +16,9 @@ export class DiscoverPage implements OnInit, OnDestroy {
 
   loadedPlaces: Places[] = [];
   private localPlaces: Places[] = [];
-  private placesSub: Subscription
+  private filter = 'all';
+  private placesSub: Subscription;
+
   constructor (private _placesService: PlacesService,
     private _authService: AuthService,
     private menuCtrl: MenuController) { }
@@ -24,6 +27,7 @@ export class DiscoverPage implements OnInit, OnDestroy {
     this.placesSub = this._placesService.places.subscribe(places => {
       this.localPlaces = places;
       this.loadedPlaces = this.localPlaces;
+      this.onFilterUpdate(this.filter);
     });
   }
 
@@ -37,15 +41,18 @@ export class DiscoverPage implements OnInit, OnDestroy {
     this.menuCtrl.toggle();
   }
 
-  onFilterUpdate(event: CustomEvent<SegmentChangeEventDetail>) {
+  onFilterUpdate(filter: string) {
     // console.log(event.detail);
-    if (event.detail.value == 'all') {
-      this.loadedPlaces = this.localPlaces;
-    } else {
-      this.loadedPlaces = this.localPlaces.filter(x => {
-         return x.userID !== this._authService.getUserId();
-      })
-    }
+    // if (event.detail.value == 'all') {
+    //   this.loadedPlaces = this.localPlaces;
+    // } else {
+    //   this.loadedPlaces = this.localPlaces.filter(x => {
+    //      return x.userID !== this._authService.getUserId();
+    //   })
+    // }
+    const isShown = place => filter === 'all' || place.userID !== this._authService.UserId;
+    this.loadedPlaces = this.localPlaces.filter(isShown);
+    this.filter = filter;
   }
 
 }

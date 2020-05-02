@@ -59,7 +59,7 @@ export class NewOfferPage implements OnInit {
         +this.form.value.price,
         this.form.value.dateFrom,
         this.form.value.dateTo,
-        this._authService.getUserId(),
+        this._authService.UserId,
       )
       this._placesService.addPlace(places).subscribe(places => {
         elementPl.dismiss();

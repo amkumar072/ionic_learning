@@ -73,7 +73,7 @@ export class EditOfferPage implements OnInit, OnDestroy {
         +this.form.value.price,
         this.place.availableFrom,
         this.place.availabeleto,
-        this._authService.getUserId(),
+        this._authService.UserId,
       )
       this._placesService.updatePlace(places).subscribe(places => {
         elementPl.dismiss();
